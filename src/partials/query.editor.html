@@ -20,29 +20,22 @@
 
 			<div class="gf-form">
                                 <label class="gf-form-label width-7">get Values</label>
-				<metric-segment-model property="ctrl.target.metricValues_array[0]" get-options = "ctrl.getMetricValues()">
+				<div ng-repeat = "segement in ctrl.target.metricValues_array track by $index">
+					<metric-segment-model property="ctrl.target.metricValues_array[$index]" ng-model = "ctrl.target.metricValues_array[$index]" get-options = "ctrl.getMetricValues()">
                                         </metric-segment-model> 
-                        </div>
-			
-			<div ng-repeat = "segement in ctrl.target.valueSegments track by $index">
-				<metric-segment-model property="ctrl.target.metricValues_array[$index+1]" ng-model = "ctrl.target.ValueSegment.name" get-options = "ctrl.getMetricValues()">
-                                        </metric-segment-model> 
+				</div>
 			</div>
-			
 			<div class="gf-form">
                                 <button class = "btn btn-inverse gf-form-btn"  ng-click="ctrl.addValueSegments()"><i class="fa fa-plus"></i></button>
                         </div>
 
 			<div class="gf-form">
                                 <label class="gf-form-label width-7">get metric</label>
-                                        <metric-segment-model property="ctrl.target.metric_array[0]" get-options = "ctrl.getColumns()">
-                                        </metric-segment-model>
-                        </div>
-
-                        <div ng-repeat = "segement in ctrl.target.segments track by $index">
-                                <metric-segment-model property="ctrl.target.metric_array[$index+1]" ng-model = "ctrl.target.segment.name" get-options = "ctrl.getColumns()">
-                                        </metric-segment-model>
-                        </div>
+                        	<div ng-repeat = "segement in ctrl.target.metric_array track by $index">
+                                	<metric-segment-model property="ctrl.target.metric_array[$index]" ng-model = "ctrl.target.metric_array[$index]" get-options = "ctrl.getColumns()">
+                                        	</metric-segment-model>
+                        	</div>
+			</div>
 				
 			<div class="gf-form">
                                 <button class = "btn btn-inverse gf-form-btn"  ng-click="ctrl.addSegments()"><i class="fa fa-plus"></i></button>

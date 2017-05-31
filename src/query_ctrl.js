@@ -21,13 +21,13 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
   }
 	
   addSegments(){
-		this.target.segments.push({name:'Select Metric'});
-		console.log(this.target.segments);
+		this.target.metric_array.push('Select Metric');
+		console.log(this.target.metric_array);
 	}
 
   addValueSegments(){
-                this.target.valueSegments.push({name:'Select Metric Value'});
-                console.log(this.target.valueSegments);
+                this.target.metricValues_array.push('Select Metric Value');
+                console.log(this.target.metricValues_array);
         }
   getColumns() {
 	console.log("I am in get Columns");
