@@ -25,6 +25,7 @@ var GenericDatasource = exports.GenericDatasource = function () {
     this.q = $q;
     this.backendSrv = backendSrv;
     this.templateSrv = templateSrv;
+    this.selectMenu = ['=', '>', '<'];
   }
 
   _createClass(GenericDatasource, [{
@@ -90,17 +91,18 @@ var GenericDatasource = exports.GenericDatasource = function () {
   }, {
     key: 'metricFindTables',
     value: function metricFindTables(options) {
-      var target = typeof options === "string" ? options : options.target;
+      var target = typeof options === "string" ? options : "Find tables";
       var interpolated = {
         target: this.templateSrv.replace(target, null, 'regex')
       };
       //console.log(interpolated);
-      return this.backendSrv.datasourceRequest({
+      var a = this.backendSrv.datasourceRequest({
         url: this.url + '/searchT',
         data: interpolated,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       }).then(this.mapToTextValue);
+      return a;
     }
   }, {
     key: 'metricFindColumns',
@@ -118,6 +120,23 @@ var GenericDatasource = exports.GenericDatasource = function () {
       }).then(this.mapToTextValue);
     }
   }, {
+    key: 'findWhereFields',
+    value: function findWhereFields(options, index) {
+      var target = typeof options === "string" ? options : options.series;
+      var meta_field = options.whereClause[index];
+      var interpolated = {
+        target: this.templateSrv.replace(target, null, 'regex'),
+        meta_field: this.templateSrv.replace(meta_field, null, 'regex')
+      };
+      console.log(interpolated);
+      return this.backendSrv.datasourceRequest({
+        url: this.url + '/searchW',
+        data: interpolated,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      }).then(this.mapToTextValue);
+    }
+  }, {
     key: 'metricFindValues',
     value: function metricFindValues(options) {
       var target = typeof options === "string" ? options : options.series;
@@ -125,17 +144,28 @@ var GenericDatasource = exports.GenericDatasource = function () {
         target: this.templateSrv.replace(target, null, 'regex')
       };
       console.log(interpolated);
-      return this.backendSrv.datasourceRequest({
+      var r = this.backendSrv.datasourceRequest({
         url: this.url + '/searchV',
         data: interpolated,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       }).then(this.mapToTextValue);
+      return r;
+    }
+  }, {
+    key: 'findOperator',
+    value: function findOperator() {
+
+      var r = new Promise(function (resolve, reject) {
+        var a = { "data": ['=', '<', '>'], "status": 200, "statusText": "OK" };
+        resolve(a);
+      }).then(this.mapToTextValue);
+      return r;
     }
   }, {
     key: 'mapToTextValue',
     value: function mapToTextValue(result) {
-      return _lodash2.default.map(result.data, function (d, i) {
+      var a = _lodash2.default.map(result.data, function (d, i) {
         if (d && d.text && d.value) {
           return { text: d.text, value: d.value };
         } else if (_lodash2.default.isObject(d)) {
@@ -143,6 +173,7 @@ var GenericDatasource = exports.GenericDatasource = function () {
         }
         return { text: d, value: d };
       });
+      return a;
     }
   }, {
     key: 'buildQueryParameters',
@@ -181,8 +212,12 @@ var GenericDatasource = exports.GenericDatasource = function () {
             query += ' by ' + target.groupby_field;
           }
           query += ' from ' + seriesName;
-          if (target.condition) {
-            query += ' where ' + target.condition;
+          if (target.condition.length > 0) {
+            query += " where ";
+            for (var i = 0; i < target.condition.length; i++) {
+              if (i > 0) query = query + " " + target.whereGroup[i] + " ";
+              query += target.whereClause[i] + " " + target.operator[i] + " \"" + target.condition[i] + "\"";
+            }
           }
           target.target = query;
           return query;

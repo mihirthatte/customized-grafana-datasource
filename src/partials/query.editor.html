@@ -10,8 +10,8 @@
 	<div ng-if="!ctrl.target.rawQuery">
 		<div class="gf-form-inline">
 			<div class="gf-form">
-                                <label class="gf-form-label width-7">FROM</label>
-                                        <metric-segment-model property="ctrl.target.series" get-options = "ctrl.getTableNames()" on-change="ctrl.onChangeInternal('table',999999)" >
+                                <label class="gf-form-label query-keyword width-7">FROM</label>
+                                        <metric-segment-model property="ctrl.target.series" get-options = "ctrl.getTableNames()" on-change="ctrl.onChangeInternal()" >
                                         </metric-segment-model>
                         </div>
 		</div>
@@ -19,18 +19,18 @@
 		<div class="gf-form-inline">
 
 			<div class="gf-form">
-                                <label class="gf-form-label width-7">get Values</label>
+                                <label class="gf-form-label query-keyword width-7">get Values</label>
 				<div ng-repeat = "segement in ctrl.target.metricValues_array track by $index">
 					<metric-segment-model property="ctrl.target.metricValues_array[$index]" ng-model = "ctrl.target.metricValues_array[$index]" get-options = "ctrl.getMetricValues()">
                                         </metric-segment-model> 
 				</div>
 			</div>
 			<div class="gf-form">
-                                <button class = "btn btn-inverse gf-form-btn"  ng-click="ctrl.addValueSegments()"><i class="fa fa-plus"></i></button>
+                                <button class = "btn btn-inverse gf-form-btn query-keyword"  ng-click="ctrl.addValueSegments()"><i class="fa fa-plus"></i></button>
                         </div>
 
 			<div class="gf-form">
-                                <label class="gf-form-label width-7">get metric</label>
+                                <label class="gf-form-label query-keyword width-7">get metric</label>
                         	<div ng-repeat = "segement in ctrl.target.metric_array track by $index">
                                 	<metric-segment-model property="ctrl.target.metric_array[$index]" ng-model = "ctrl.target.metric_array[$index]" get-options = "ctrl.getColumns()">
                                         	</metric-segment-model>
@@ -38,29 +38,74 @@
 			</div>
 				
 			<div class="gf-form">
-                                <button class = "btn btn-inverse gf-form-btn"  ng-click="ctrl.addSegments()"><i class="fa fa-plus"></i></button>
+                                <button class = "btn btn-inverse gf-form-btn query-keyword"  ng-click="ctrl.addSegments()"><i class="fa fa-plus"></i></button>
                         </div>
 		
 		</div>
 		
-		<div class="gf-form-inline">
-			<div class="gf-form">
-        			<label class="gf-form-label">Where</label>
-                                	<input type="text" class="gf-form-input" ng-model="ctrl.target.condition"
-                                	bs-tooltip="'Add a where clause'" data-placement="right" spellcheck='false' placeholder='column = "value"' ng-blur="ctrl.panelCtrl.refresh();"></input>
-        		</div>
+	<div class="gf-form-inline">
+			<div class="gf-form-inline">
+				<div class="gf-form">
+        				<label class="gf-form-label query-keyword width-7">Where</label>
+					<div ng-repeat = "segement in ctrl.target.whereClause track by $index">
+						<div class="gf-form-inline"> 
+						
+							<select ng-if = "$index >0" style = "width : 70px;" name="whereGroup" ng-model ="ctrl.target.whereGroup[$index]" bs-tooltip="'Select an Operator'">
+								<option value="and">and</option>
+                                                        	<option value="or">or</option>
+							</select>
+							<metric-segment-model property="ctrl.target.whereClause[$index]" ng-model = "ctrl.target.whereClause[$index]" get-options = "ctrl.getColumns()">
+                                                	</metric-segment-model>
+						
+							<select style = "width : 70px;" name="operator" ng-model ="ctrl.target.operator[$index]" bs-tooltip="'Select an Operator'">
+								<option></option>
+								<option value="=">=</option>
+								<option value="!=">!=</option>
+								<option value=">=">&ge;</option>							
+								<option value="<=">&le;</option>
+								<option value=">">&gt;</option>
+								<option value="<">&lt;</option>
+								<option value="Like">Like</option>
+								<option value="Not Like">Not Like</option>
+							</select>
+					 
+					 		<metric-segment-model property="ctrl.target.condition[$index]" ng-model = "ctrl.target.condition[$index]"get-options = "ctrl.getWhereFields($index)">
+                                                	</metric-segment-model>
+							<!-- <input type="text" style = "width : 170px;" class="gf-form-input"ng-model="ctrl.target.condition[$index]" ></input>
+							<p ng-repeat="w in ctrl.target.wName | filter:ctrl.target.condition[$index]" ng-hide="ctrl.target.condition[$index]==''">{{w}} </br></p> -->
+						</div>
+					</div>
+        			</div>
+				<div class="gf-form">
+                                	<button class = "btn btn-inverse gf-form-btn query-keyword"  ng-click="ctrl.addWhereClause()">Add rule <i class="fa fa-plus"></i></button>
+                        	</div>
+			</div>
+			 
+		<div class="gf-form">
+                                <button class = "btn btn-inverse gf-form-btn query-keyword"  ng-click="ctrl.addWhereClauseGroup()">Add Group <i class="fa fa-plus"></i></button>
+                </div>
+
+	</div>
+
+	
+		<div class = "gf-form-inline">
         		<div class="gf-form">
-                		<label class="gf-form-label">Group by column</label>
+                		<label class="gf-form-label query-keyword">Group by column</label>
                                 	<input type="text" class="gf-form-input" ng-model="ctrl.target.groupby_field" bs-tooltip="'Add a group by column or leave blank'"
-                                	placeholder="column" spellcheck="false" bs-typeahead="listColumns" data-min-length=0 ng-blur="ctrl.panelCtrl.refresh();"></input>
+                                	placeholder="column" spellcheck="false" bs-typeahead="listColumns" data-min-length=0 ></input>
 			</div>
 		</div>
 		
 		 <div class="gf-form-inline">
                         <div class="gf-form">
-                                <label class="gf-form-label">Target Naming</label>
+                                <label class="gf-form-label query-keyword">Target Naming</label>
 					<input type="text" class="gf-form-input" ng-model="ctrl.target.target_alias"
-                                        bs-tooltip="'Add target alias'" data-iplacement="right" spellcheck='false'ng-blur="ctrl.panelCtrl.refresh();;"></input>
+                                        bs-tooltip="'Add target alias'" data-iplacement="right" spellcheck='false'></input>
+                        </div>
+                </div>
+		<div class="gf-form-inline">
+                        <div class="gf-form">
+				<button class="gf-form-label" style="background-color:#008CBA; border-radius: 4px; width:120px;" ng-click = "ctrl.panelCtrl.refresh();">Run</button>
                         </div>
                 </div>
 	</div>

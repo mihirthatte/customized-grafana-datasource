@@ -44,6 +44,7 @@ System.register(['lodash'], function (_export, _context) {
           this.q = $q;
           this.backendSrv = backendSrv;
           this.templateSrv = templateSrv;
+          this.selectMenu = ['=', '>', '<'];
         }
 
         _createClass(GenericDatasource, [{
@@ -109,17 +110,18 @@ System.register(['lodash'], function (_export, _context) {
         }, {
           key: 'metricFindTables',
           value: function metricFindTables(options) {
-            var target = typeof options === "string" ? options : options.target;
+            var target = typeof options === "string" ? options : "Find tables";
             var interpolated = {
               target: this.templateSrv.replace(target, null, 'regex')
             };
             //console.log(interpolated);
-            return this.backendSrv.datasourceRequest({
+            var a = this.backendSrv.datasourceRequest({
               url: this.url + '/searchT',
               data: interpolated,
               method: 'POST',
               headers: { 'Content-Type': 'application/json' }
             }).then(this.mapToTextValue);
+            return a;
           }
         }, {
           key: 'metricFindColumns',
@@ -137,6 +139,23 @@ System.register(['lodash'], function (_export, _context) {
             }).then(this.mapToTextValue);
           }
         }, {
+          key: 'findWhereFields',
+          value: function findWhereFields(options, index) {
+            var target = typeof options === "string" ? options : options.series;
+            var meta_field = options.whereClause[index];
+            var interpolated = {
+              target: this.templateSrv.replace(target, null, 'regex'),
+              meta_field: this.templateSrv.replace(meta_field, null, 'regex')
+            };
+            console.log(interpolated);
+            return this.backendSrv.datasourceRequest({
+              url: this.url + '/searchW',
+              data: interpolated,
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' }
+            }).then(this.mapToTextValue);
+          }
+        }, {
           key: 'metricFindValues',
           value: function metricFindValues(options) {
             var target = typeof options === "string" ? options : options.series;
@@ -144,17 +163,28 @@ System.register(['lodash'], function (_export, _context) {
               target: this.templateSrv.replace(target, null, 'regex')
             };
             console.log(interpolated);
-            return this.backendSrv.datasourceRequest({
+            var r = this.backendSrv.datasourceRequest({
               url: this.url + '/searchV',
               data: interpolated,
               method: 'POST',
               headers: { 'Content-Type': 'application/json' }
             }).then(this.mapToTextValue);
+            return r;
+          }
+        }, {
+          key: 'findOperator',
+          value: function findOperator() {
+
+            var r = new Promise(function (resolve, reject) {
+              var a = { "data": ['=', '<', '>'], "status": 200, "statusText": "OK" };
+              resolve(a);
+            }).then(this.mapToTextValue);
+            return r;
           }
         }, {
           key: 'mapToTextValue',
           value: function mapToTextValue(result) {
-            return _.map(result.data, function (d, i) {
+            var a = _.map(result.data, function (d, i) {
               if (d && d.text && d.value) {
                 return { text: d.text, value: d.value };
               } else if (_.isObject(d)) {
@@ -162,6 +192,7 @@ System.register(['lodash'], function (_export, _context) {
               }
               return { text: d, value: d };
             });
+            return a;
           }
         }, {
           key: 'buildQueryParameters',
@@ -200,8 +231,12 @@ System.register(['lodash'], function (_export, _context) {
                   query += ' by ' + target.groupby_field;
                 }
                 query += ' from ' + seriesName;
-                if (target.condition) {
-                  query += ' where ' + target.condition;
+                if (target.condition.length > 0) {
+                  query += " where ";
+                  for (var i = 0; i < target.condition.length; i++) {
+                    if (i > 0) query = query + " " + target.whereGroup[i] + " ";
+                    query += target.whereClause[i] + " " + target.operator[i] + " \"" + target.condition[i] + "\"";
+                  }
                 }
                 target.target = query;
                 return query;
