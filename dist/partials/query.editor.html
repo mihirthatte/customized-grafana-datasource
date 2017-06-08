@@ -42,52 +42,57 @@
                         </div>
 		
 		</div>
-		
-	<div class="gf-form-inline">
+	
+
+
+		<div ng-repeat = "line in ctrl.target.whereClauseGroup" ng-init="parentIndex = $index">   
+				<div ng-if = "$index > 0" style="margin-left:96px; margin-top:5px; margin-bottom:5px;">
+				<select style = "width : 70px;" name="Group" ng-model ="ctrl.target.outerGroupOperator[$index]" bs-tooltip="'Select an Operator'">
+					<option value="and">and</option>
+                    			<option value="or">or</option>
+                               	</select>
+				</div>
+			
 			<div class="gf-form-inline">
 				<div class="gf-form">
-        				<label class="gf-form-label query-keyword width-7">Where</label>
-					<div ng-repeat = "segement in ctrl.target.whereClause track by $index">
-						<div class="gf-form-inline"> 
-						
-							<select ng-if = "$index >0" style = "width : 70px;" name="whereGroup" ng-model ="ctrl.target.whereGroup[$index]" bs-tooltip="'Select an Operator'">
-								<option value="and">and</option>
-                                                        	<option value="or">or</option>
+					<label ng-if = "$index == 0"class="gf-form-label query-keyword width-7">Where</label>
+					<div ng-repeat = "segment in line">
+						<div class="gf-form-inline">
+							<select ng-if = "$index >0" style = "width : 70px; margin-left:10px;margin-right:10px;" name="whereGroup" ng-model ="ctrl.target.inlineGroupOperator[parentIndex][$index]" bs-tooltip="'Select an Operator'">
+		                                    		<option value="and">and</option>
+	        		                            	<option value="or">or</option>
 							</select>
-							<metric-segment-model property="ctrl.target.whereClause[$index]" ng-model = "ctrl.target.whereClause[$index]" get-options = "ctrl.getColumns()">
-                                                	</metric-segment-model>
-						
-							<select style = "width : 70px;" name="operator" ng-model ="ctrl.target.operator[$index]" bs-tooltip="'Select an Operator'">
-								<option></option>
-								<option value="=">=</option>
-								<option value="!=">!=</option>
-								<option value=">=">&ge;</option>							
-								<option value="<=">&le;</option>
-								<option value=">">&gt;</option>
-								<option value="<">&lt;</option>
-								<option value="Like">Like</option>
-								<option value="Not Like">Not Like</option>
-							</select>
-					 
-					 		<metric-segment-model property="ctrl.target.condition[$index]" ng-model = "ctrl.target.condition[$index]"get-options = "ctrl.getWhereFields($index)">
-                                                	</metric-segment-model>
-							<!-- <input type="text" style = "width : 170px;" class="gf-form-input"ng-model="ctrl.target.condition[$index]" ></input>
-							<p ng-repeat="w in ctrl.target.wName | filter:ctrl.target.condition[$index]" ng-hide="ctrl.target.condition[$index]==''">{{w}} </br></p> -->
-						</div>
-					</div>
-        			</div>
-				<div class="gf-form">
-                                	<button class = "btn btn-inverse gf-form-btn query-keyword"  ng-click="ctrl.addWhereClause()">Add rule <i class="fa fa-plus"></i></button>
-                        	</div>
-			</div>
-			 
-		<div class="gf-form">
-                                <button class = "btn btn-inverse gf-form-btn query-keyword"  ng-click="ctrl.addWhereClauseGroup()">Add Group <i class="fa fa-plus"></i></button>
-                </div>
+                        		        	<metric-segment-model property="segment.left" ng-model = "segment.left" get-options = "ctrl.getColumns()">
+		                               		 </metric-segment-model>
 
-	</div>
+		        	                        <select style = "width : 70px;" name="operator" ng-model ="segment.op" bs-tooltip="'Select an Operator'">
+        		        	                    <option></option>
+                		        	            <option value="=">=</option>
+                        		        	    <option value="!=">!=</option>
+	                        		            <option value=">=">&ge;</option>
+        	                        		    <option value="<=">&le;</option>
+		                	                    <option value=">">&gt;</option>
+        		                	            <option value="<">&lt;</option>
+                		                	    <option value="like">Like</option>
+	                		                    <option value="not like">Not Like</option>
+        	                		        </select>
+							
+	                	        	        <metric-segment-model property="segment.right" ng-model = "segment.right" get-options = "ctrl.getWhereFields(parentIndex,$index)"on-change="ctrl.panelCtrl.refresh();">
+	        	                	        </metric-segment-model>
+		        	                        <!-- <input type="text" style = "width : 170px;" class="gf-form-input"ng-model="segment.right" get-options = "ctrl.getWhereFields(parentIndex,$index)" ></input> -->
+                	 	     		</div>
+	                        	</div>
+	            		</div>	
+            		    	<div class="gf-form">
+		                	<button class = "btn btn-inverse gf-form-btn query-keyword"  ng-click="ctrl.addWhereClause($index)">Add rule <i class="fa fa-plus"></i></button>
+				</div>
+        	    		<div class="gf-form">
+			                <button class = "btn btn-inverse gf-form-btn query-keyword"  ng-click="ctrl.addWhereClauseGroup()">Add Group <i class="fa fa-plus"></i></button>
+			    	</div>
 
-	
+        		</div>
+    		</div>
+
 		<div class = "gf-form-inline">
         		<div class="gf-form">
                 		<label class="gf-form-label query-keyword">Group by column</label>

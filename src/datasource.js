@@ -96,9 +96,9 @@ export class GenericDatasource {
     }).then(this.mapToTextValue);
   }
 
-  findWhereFields(options,index){
+  findWhereFields(options,parentIndex,index){
 	var target = typeof (options) === "string" ? options : options.series;
-	var meta_field = options.whereClause[index];
+	var meta_field = options.whereClauseGroup[parentIndex][index].left;
     var interpolated = {
         target: this.templateSrv.replace(target, null, 'regex'),
 	meta_field: this.templateSrv.replace(meta_field, null, 'regex')
@@ -184,15 +184,18 @@ export class GenericDatasource {
                 		query += ' by ' + target.groupby_field;
                 	}
         		query += ' from ' + seriesName;
-			if (target.condition.length>0) {
 				query += " where ";
-				for(var i =0 ; i<target.condition.length; i++){
-					if(i>0) query = query +" "+target.whereGroup[i]+" ";
-     					query += target.whereClause[i]+" "+target.operator[i]+" \""+target.condition[i]+"\"";
-					
+				for(var i=0; i<target.whereClauseGroup.length; i++)
+				{
+					if(i>0) query +=" "+ target.outerGroupOperator[i]+" ";
+					query +=" ( ";
+					for(var j =0 ; j<target.whereClauseGroup[i].length; j++){
+						if(j>0) query = query +" "+target.inlineGroupOperator[i][j]+" ";
+     						query += target.whereClauseGroup[i][j].left+" "+target.whereClauseGroup[i][j].op+" \""+target.whereClauseGroup[i][j].right+"\"";
+					}
+					query +=" )";
 				}
 				
-   			}
 			target.target = query;
 			return query;
 		}

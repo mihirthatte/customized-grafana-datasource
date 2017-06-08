@@ -12,31 +12,26 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
     this.target.type = this.target.type || 'timeserie';
     this.target.condition = this.target.condition||[];
     this.target.groupby_field = this.target.groupby_field || ' '; 
-    this.target.segments = this.target.segments||[];
-    this.target.valueSegments =this.target.valueSegments||[];
+    //this.target.segments = this.target.segments||[];
+    //this.target.valueSegments =this.target.valueSegments||[];
     this.target.metric_array = this.target.metric_array||['Select Metric'];
     this.target.metricValues_array = this.target.metricValues_array ||['Select Metric Value'];
     this.target.target_alias = this.target.target_alias||"";
-    this.target.whereClause = this.target.whereClause||['Select Metric'];
-    this.target.whereClauseGroup = this.target.whereClauseGroup||[this.target.whereClause];
-    //this.target.operator = ['=', '>', '<', '!~', '<>','Like','Not Like'];
-    this.target.operator = this.target.operator||["="];
-    this.selectMenu = [{'text':'=' , "value": "="}];
+    this.target.whereClauseGroup = this.target.whereClauseGroup||[[{'left':'Select Metric','op':'','right':'Insert Target'}]];
+    this.target.inlineGroupOperator = this.target.inlineGroupOperator||[['']];
+    this.target.outerGroupOperator = this.target.outerGroupOperator || [''];
     this.target.wName = ["Aida", "Aidan", "Alla", "Allen", "Beverly", "Bea", "Caleb","Catherine","false"];
-    this.target.whereGroup = this.target.whereGroup||["AND"];
   }
 
-  addWhereClause(){
-		this.target.whereClause.push('Select Metric Value');
+  addWhereClause(index){
+		this.target.whereClauseGroup[index].push({'left':'Select Metric','op':'=','right':'Insert Target'});
                 console.log(this.target.metricValues_array);
-
   	}
   addWhereClauseGroup(){
-                this.target.whereClauseGroup.push(['Select Metric Value']);
+                this.target.whereClauseGroup.push([{'left':'Select Metric','op':'','right':'Insert Target'}]);
+		this.target.inlineGroupOperator.push(['']);
                 console.log(this.target.metricValues_array);
-
         }
-
 
     getOperator(){              
        var a = this.datasource.findOperator();
@@ -78,11 +73,10 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
       .then(this.uiSegmentSrv.transformToSegments(false));
         }
 
- getWhereFields(index){
-	this.panelCtrl.refresh();
+ getWhereFields(parentIndex, index){
 	console.log("I am in get Table Names");
         console.log(this.target);
-    	return this.datasource.findWhereFields(this.target,index)
+    	return this.datasource.findWhereFields(this.target,parentIndex, index)
       .then(this.uiSegmentSrv.transformToSegments(false));
         }
 

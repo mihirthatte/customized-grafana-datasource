@@ -72,31 +72,29 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           _this.target.type = _this.target.type || 'timeserie';
           _this.target.condition = _this.target.condition || [];
           _this.target.groupby_field = _this.target.groupby_field || ' ';
-          _this.target.segments = _this.target.segments || [];
-          _this.target.valueSegments = _this.target.valueSegments || [];
+          //this.target.segments = this.target.segments||[];
+          //this.target.valueSegments =this.target.valueSegments||[];
           _this.target.metric_array = _this.target.metric_array || ['Select Metric'];
           _this.target.metricValues_array = _this.target.metricValues_array || ['Select Metric Value'];
           _this.target.target_alias = _this.target.target_alias || "";
-          _this.target.whereClause = _this.target.whereClause || ['Select Metric'];
-          _this.target.whereClauseGroup = _this.target.whereClauseGroup || [_this.target.whereClause];
-          //this.target.operator = ['=', '>', '<', '!~', '<>','Like','Not Like'];
-          _this.target.operator = _this.target.operator || ["="];
-          _this.selectMenu = [{ 'text': '=', "value": "=" }];
+          _this.target.whereClauseGroup = _this.target.whereClauseGroup || [[{ 'left': 'Select Metric', 'op': '', 'right': 'Insert Target' }]];
+          _this.target.inlineGroupOperator = _this.target.inlineGroupOperator || [['']];
+          _this.target.outerGroupOperator = _this.target.outerGroupOperator || [''];
           _this.target.wName = ["Aida", "Aidan", "Alla", "Allen", "Beverly", "Bea", "Caleb", "Catherine", "false"];
-          _this.target.whereGroup = _this.target.whereGroup || ["AND"];
           return _this;
         }
 
         _createClass(GenericDatasourceQueryCtrl, [{
           key: 'addWhereClause',
-          value: function addWhereClause() {
-            this.target.whereClause.push('Select Metric Value');
+          value: function addWhereClause(index) {
+            this.target.whereClauseGroup[index].push({ 'left': 'Select Metric', 'op': '=', 'right': 'Insert Target' });
             console.log(this.target.metricValues_array);
           }
         }, {
           key: 'addWhereClauseGroup',
           value: function addWhereClauseGroup() {
-            this.target.whereClauseGroup.push([]);
+            this.target.whereClauseGroup.push([{ 'left': 'Select Metric', 'op': '', 'right': 'Insert Target' }]);
+            this.target.inlineGroupOperator.push(['']);
             console.log(this.target.metricValues_array);
           }
         }, {
@@ -144,11 +142,10 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           }
         }, {
           key: 'getWhereFields',
-          value: function getWhereFields(index) {
-            this.panelCtrl.refresh();
+          value: function getWhereFields(parentIndex, index) {
             console.log("I am in get Table Names");
             console.log(this.target);
-            return this.datasource.findWhereFields(this.target, index).then(this.uiSegmentSrv.transformToSegments(false));
+            return this.datasource.findWhereFields(this.target, parentIndex, index).then(this.uiSegmentSrv.transformToSegments(false));
           }
         }, {
           key: 'myFunc',
