@@ -81,6 +81,13 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           _this.target.inlineGroupOperator = _this.target.inlineGroupOperator || [['']];
           _this.target.outerGroupOperator = _this.target.outerGroupOperator || [''];
           _this.target.wName = ["Aida", "Aidan", "Alla", "Allen", "Beverly", "Bea", "Caleb", "Catherine", "false"];
+          _this.wName = ["abcd", "azme", "aoiq", "dnvbv", "doie", "abwe", "aoio"];
+          _this.test = "";
+          _this.index = "";
+          _this.parentIndex = "";
+          _this.hoverEdit = false;
+          _this.hiddenIndex = "";
+          self = _this;
           return _this;
         }
 
@@ -89,6 +96,13 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           value: function addWhereClause(index) {
             this.target.whereClauseGroup[index].push({ 'left': 'Select Metric', 'op': '=', 'right': 'Insert Target' });
             console.log(this.target.metricValues_array);
+          }
+        }, {
+          key: 'removeWhereClause',
+          value: function removeWhereClause(parentIndex, index) {
+            console.log(this.target.whereClauseGroup[parentIndex][index]);
+            this.target.whereClauseGroup[parentIndex].splice(index, 1);
+            console.log(this.target.whereClauseGroup[parentIndex]);
           }
         }, {
           key: 'addWhereClauseGroup',
@@ -111,10 +125,30 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
             console.log(this.target.metric_array);
           }
         }, {
+          key: 'removeSegment',
+          value: function removeSegment(index) {
+            if (this.target.metric_array.length == 1) {
+              this.target.metric_array.splice(index, 1, 'Select Metric');
+            } else {
+              this.target.metric_array.splice(index, 1);
+            }
+            console.log("I am in remove seg");
+          }
+        }, {
           key: 'addValueSegments',
           value: function addValueSegments() {
             this.target.metricValues_array.push('Select Metric Value');
             console.log(this.target.metricValues_array);
+          }
+        }, {
+          key: 'removeValueSegment',
+          value: function removeValueSegment(index) {
+            if (this.target.metricValues_array.length == 1) {
+              this.target.metricValues_array.splice(index, 1, 'Select Metric Value');
+            } else {
+              this.target.metricValues_array.splice(index, 1);
+            }
+            console.log("I am in remove value seg");
           }
         }, {
           key: 'getColumns',
@@ -128,9 +162,7 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           value: function getMetricValues() {
             console.log("I am in get Metric Values");
             console.log(this.target);
-            var a = this.datasource.metricFindValues(this.target);
-            console.log(a.$$state);
-            return a;
+            return this.datasource.metricFindValues(this.target);
             //.then(this.uiSegmentSrv.transformToSegments(false));
           }
         }, {
@@ -142,16 +174,28 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           }
         }, {
           key: 'getWhereFields',
-          value: function getWhereFields(parentIndex, index) {
+          value: function getWhereFields() {
             console.log("I am in get Table Names");
-            console.log(this.target);
-            return this.datasource.findWhereFields(this.target, parentIndex, index).then(this.uiSegmentSrv.transformToSegments(false));
+            console.log(self.target);
+            console.log(arguments[0]);
+            //var a = this.target.whereClauseGroup[parentIndex][index].right;
+            return self.datasource.findWhereFields(self.target, self.parentIndex, self.index, arguments[0], arguments[1]);
           }
         }, {
-          key: 'myFunc',
-          value: function myFunc() {
-            console.log("I am in my Func");
-            console.log(this.target);
+          key: 'foo',
+          value: function foo() {
+            console.log("I am in foo");
+            console.log(self.test);
+            //console.log(index);
+            //return ["abcd","azme","aoiq","dnvbv","doie","abwe","aoio"];
+            return self.wName;
+          }
+        }, {
+          key: 'saveIndices',
+          value: function saveIndices(parentIndex, index) {
+            console.log("I am saving indices");
+            this.parentIndex = parentIndex;
+            this.index = index;
           }
         }, {
           key: 'toggleEditorMode',
@@ -161,9 +205,20 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
         }, {
           key: 'onChangeInternal',
           value: function onChangeInternal() {
-            this.target.metric_array = ['Select Metric'];
-            this.target.metricValues_array = ['Select Matric Value'];
+            //this.target.metric_array = ['Select Metric'];
+            //this.target.metricValues_array = ['Select Matric Value'];
             console.log(this.target);
+            this.panelCtrl.refresh();
+          }
+        }, {
+          key: 'hoverIn',
+          value: function hoverIn() {
+            this.hoverEdit = true;
+          }
+        }, {
+          key: 'hoverOut',
+          value: function hoverOut() {
+            this.hoverEdit = false;
           }
         }]);
 

@@ -26,6 +26,9 @@ var GenericDatasource = exports.GenericDatasource = function () {
     this.backendSrv = backendSrv;
     this.templateSrv = templateSrv;
     this.selectMenu = ['=', '>', '<'];
+    this.metricValue = this.metricValue || [];
+    this.metricColumn = this.metricColumn || [];
+    this.whereSuggest = [];
   }
 
   _createClass(GenericDatasource, [{
@@ -112,29 +115,43 @@ var GenericDatasource = exports.GenericDatasource = function () {
         target: this.templateSrv.replace(target, null, 'regex')
       };
       console.log(interpolated);
-      return this.backendSrv.datasourceRequest({
+      var r = this.backendSrv.datasourceRequest({
         url: this.url + '/searchC',
         data: interpolated,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       }).then(this.mapToTextValue);
+      /*.then(function(result){
+             this.metricColumn = result.data;
+             console.log(this.metricColumn);
+             }.bind(this));
+      */
+      return r;
     }
   }, {
     key: 'findWhereFields',
-    value: function findWhereFields(options, parentIndex, index) {
+    value: function findWhereFields(options, parentIndex, index, like_field, callback) {
       var target = typeof options === "string" ? options : options.series;
       var meta_field = options.whereClauseGroup[parentIndex][index].left;
+      //var like_field = options.whereClauseGroup[parentIndex][index].right;
       var interpolated = {
         target: this.templateSrv.replace(target, null, 'regex'),
-        meta_field: this.templateSrv.replace(meta_field, null, 'regex')
+        meta_field: this.templateSrv.replace(meta_field, null, 'regex'),
+        like_field: this.templateSrv.replace(like_field, null, 'regex')
       };
       console.log(interpolated);
-      return this.backendSrv.datasourceRequest({
+      var r = this.backendSrv.datasourceRequest({
         url: this.url + '/searchW',
         data: interpolated,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
-      }).then(this.mapToTextValue);
+      }).then(this.mapToArray).then(callback);
+      /*.then(function(result){
+             this.whereSuggest = result.data;
+             console.log(this.whereSuggest);
+      return this.whereSuggest;
+             }.bind(this));*/
+      return r;
     }
   }, {
     key: 'metricFindValues',
@@ -149,7 +166,10 @@ var GenericDatasource = exports.GenericDatasource = function () {
         data: interpolated,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
-      }).then(this.mapToTextValue);
+      }).then(function (result) {
+        this.metricValue = result.data;
+        console.log(this.metricValue);
+      }.bind(this));
       return r;
     }
   }, {
@@ -174,6 +194,17 @@ var GenericDatasource = exports.GenericDatasource = function () {
         return { text: d, value: d };
       });
       return a;
+    }
+  }, {
+    key: 'mapToArray',
+    value: function mapToArray(result) {
+      return result.data;
+    }
+  }, {
+    key: 'mapToListValue',
+    value: function mapToListValue(result) {
+      this.metricValue = result.data;
+      console.log(this.metricValue);
     }
   }, {
     key: 'buildQueryParameters',

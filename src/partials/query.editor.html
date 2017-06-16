@@ -20,22 +20,25 @@
 
 			<div class="gf-form">
                                 <label class="gf-form-label query-keyword width-7">get Values</label>
-				<div ng-repeat = "segement in ctrl.target.metricValues_array track by $index">
-					<metric-segment-model property="ctrl.target.metricValues_array[$index]" ng-model = "ctrl.target.metricValues_array[$index]" get-options = "ctrl.getMetricValues()">
-                                        </metric-segment-model> 
+				<div ng-repeat = "segment in ctrl.target.metricValues_array track by $index" class="gf-form-inline">
+					<!--<metric-segment-model property = "ctrl.target.metricValues_array[$index]" ng-model = "ctrl.target.metricValues_array[$index]" get-options = "ctrl.getMetricValues()">
+					</metric-segment-model>{{ctrl.target.metricValues_array[$index]}} -->
+					 <select  type="text" style = "width : 80px;" class="gf-form-input" ng-model="ctrl.target.metricValues_array[$index]" ng-click = "ctrl.getMetricValues()" ng-options="x for x in ctrl.datasource.metricValue" > </select>
+					<button class = "btn btn-inverse gf-form-btn"  ng-click="ctrl.removeValueSegment($index)"><i class="fa fa-trash"></i></button>
 				</div>
 			</div>
 			<div class="gf-form">
                                 <button class = "btn btn-inverse gf-form-btn query-keyword"  ng-click="ctrl.addValueSegments()"><i class="fa fa-plus"></i></button>
                         </div>
-
+			</br>
 			<div class="gf-form">
                                 <label class="gf-form-label query-keyword width-7">get metric</label>
-                        	<div ng-repeat = "segement in ctrl.target.metric_array track by $index">
-                                	<metric-segment-model property="ctrl.target.metric_array[$index]" ng-model = "ctrl.target.metric_array[$index]" get-options = "ctrl.getColumns()">
-                                        	</metric-segment-model>
-                        	</div>
 			</div>
+                        <div ng-repeat = "element in ctrl.target.metric_array track by $index" class="gf-form">
+				<metric-segment-model property="ctrl.target.metric_array[$index]" get-options = "ctrl.getColumns()"></metric-segment-model> <!-- {{ctrl.target.metric_array[$index]}}{{$index}} -->
+				<!-- <select type="text" style = "width : 80px;" class="gf-form-input" ng-model="ctrl.target.metric_array[$index]" ng-click = "ctrl.getColumns()" ng-options="x for x in ctrl.datasource.metricColumn" ></select> -->
+				<button  class = "btn btn-inverse gf-form-btn"  ng-click="ctrl.removeSegment($index)"><i class="fa fa-trash"></i></button>
+                        </div>
 				
 			<div class="gf-form">
                                 <button class = "btn btn-inverse gf-form-btn query-keyword"  ng-click="ctrl.addSegments()"><i class="fa fa-plus"></i></button>
@@ -77,9 +80,9 @@
 	                		                    <option value="not like">Not Like</option>
         	                		        </select>
 							
-	                	        	        <metric-segment-model property="segment.right" ng-model = "segment.right" get-options = "ctrl.getWhereFields(parentIndex,$index)"on-change="ctrl.panelCtrl.refresh();">
-	        	                	        </metric-segment-model>
-		        	                        <!-- <input type="text" style = "width : 170px;" class="gf-form-input"ng-model="segment.right" get-options = "ctrl.getWhereFields(parentIndex,$index)" ></input> -->
+							<input type="text" ng-model="segment.right" bs-typeahead="ctrl.getWhereFields" on-change="ctrl.panelCtrl.refresh();" ng-click="ctrl.saveIndices(parentIndex, $index)"></input>
+							 <button class = "btn btn-inverse gf-form-btn"  ng-click="ctrl.removeWhereClause(parentIndex,$index)"><i class="fa fa-trash"></i></button>
+							
                 	 	     		</div>
 	                        	</div>
 	            		</div>	
