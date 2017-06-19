@@ -76,12 +76,12 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           //this.target.valueSegments =this.target.valueSegments||[];
           _this.target.metric_array = _this.target.metric_array || ['Select Metric'];
           _this.target.metricValues_array = _this.target.metricValues_array || ['Select Metric Value'];
+          _this.target.aggregator = _this.target.aggregator || ['average'];
           _this.target.target_alias = _this.target.target_alias || "";
-          _this.target.whereClauseGroup = _this.target.whereClauseGroup || [[{ 'left': 'Select Metric', 'op': '', 'right': 'Insert Target' }]];
+          _this.target.whereClauseGroup = _this.target.whereClauseGroup || [[{ 'left': 'Select Metric', 'op': '', 'right': '' }]];
           _this.target.inlineGroupOperator = _this.target.inlineGroupOperator || [['']];
           _this.target.outerGroupOperator = _this.target.outerGroupOperator || [''];
-          _this.target.wName = ["Aida", "Aidan", "Alla", "Allen", "Beverly", "Bea", "Caleb", "Catherine", "false"];
-          _this.wName = ["abcd", "azme", "aoiq", "dnvbv", "doie", "abwe", "aoio"];
+          _this.target.percentileValue = _this.target.percentileValue || [''];
           _this.test = "";
           _this.index = "";
           _this.parentIndex = "";
@@ -94,7 +94,7 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
         _createClass(GenericDatasourceQueryCtrl, [{
           key: 'addWhereClause',
           value: function addWhereClause(index) {
-            this.target.whereClauseGroup[index].push({ 'left': 'Select Metric', 'op': '=', 'right': 'Insert Target' });
+            this.target.whereClauseGroup[index].push({ 'left': 'Select Metric', 'op': '=', 'right': '' });
             console.log(this.target.metricValues_array);
           }
         }, {
@@ -107,7 +107,7 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
         }, {
           key: 'addWhereClauseGroup',
           value: function addWhereClauseGroup() {
-            this.target.whereClauseGroup.push([{ 'left': 'Select Metric', 'op': '', 'right': 'Insert Target' }]);
+            this.target.whereClauseGroup.push([{ 'left': 'Select Metric', 'op': '', 'right': '' }]);
             this.target.inlineGroupOperator.push(['']);
             console.log(this.target.metricValues_array);
           }
@@ -138,6 +138,8 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           key: 'addValueSegments',
           value: function addValueSegments() {
             this.target.metricValues_array.push('Select Metric Value');
+            this.target.aggregator.push('average');
+            this.target.percentileValue.push('');
             console.log(this.target.metricValues_array);
           }
         }, {

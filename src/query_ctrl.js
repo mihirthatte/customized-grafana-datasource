@@ -16,12 +16,12 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
     //this.target.valueSegments =this.target.valueSegments||[];
     this.target.metric_array = this.target.metric_array||['Select Metric'];
     this.target.metricValues_array = this.target.metricValues_array ||['Select Metric Value'];
+    this.target.aggregator = this.target.aggregator ||['average'];
     this.target.target_alias = this.target.target_alias||"";
-    this.target.whereClauseGroup = this.target.whereClauseGroup||[[{'left':'Select Metric','op':'','right':'Insert Target'}]];
+    this.target.whereClauseGroup = this.target.whereClauseGroup||[[{'left':'Select Metric','op':'','right':''}]];
     this.target.inlineGroupOperator = this.target.inlineGroupOperator||[['']];
     this.target.outerGroupOperator = this.target.outerGroupOperator || [''];
-    this.target.wName = ["Aida", "Aidan", "Alla", "Allen", "Beverly", "Bea", "Caleb","Catherine","false"];
-    this.wName = ["abcd","azme","aoiq","dnvbv","doie","abwe","aoio"];
+    this.target.percentileValue = this.target.percentileValue||[''];
     this.test ="";
     this.index="";
     this.parentIndex="";
@@ -31,7 +31,7 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
   }
 
   addWhereClause(index){
-		this.target.whereClauseGroup[index].push({'left':'Select Metric','op':'=','right':'Insert Target'});
+		this.target.whereClauseGroup[index].push({'left':'Select Metric','op':'=','right':''});
                 console.log(this.target.metricValues_array);
   	}
  removeWhereClause(parentIndex,index){
@@ -42,7 +42,7 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
 	}
 
   addWhereClauseGroup(){
-                this.target.whereClauseGroup.push([{'left':'Select Metric','op':'','right':'Insert Target'}]);
+                this.target.whereClauseGroup.push([{'left':'Select Metric','op':'','right':''}]);
 		this.target.inlineGroupOperator.push(['']);
                 console.log(this.target.metricValues_array);
         }
@@ -70,6 +70,8 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
 
   addValueSegments(){
                 this.target.metricValues_array.push('Select Metric Value');
+		this.target.aggregator.push('average');
+		this.target.percentileValue.push('');
                 console.log(this.target.metricValues_array);
         } 
 

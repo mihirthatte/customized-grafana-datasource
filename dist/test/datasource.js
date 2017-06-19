@@ -166,10 +166,11 @@ var GenericDatasource = exports.GenericDatasource = function () {
         data: interpolated,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
-      }).then(function (result) {
-        this.metricValue = result.data;
-        console.log(this.metricValue);
-      }.bind(this));
+      }).then(this.mapToTextValue);
+      /*then(function(result){
+      this.metricValue = result.data;
+      console.log(this.metricValue);
+      }.bind(this)); */
       return r;
     }
   }, {
@@ -234,7 +235,8 @@ var GenericDatasource = exports.GenericDatasource = function () {
           console.log(query);
 
           for (var index = 0; index < target.metricValues_array.length; index++) {
-            query += ' , values.' + target.metricValues_array[index];
+            query += ', aggregate(values.' + target.metricValues_array[index] + ', $quantify, ';
+            if (target.aggregator[index] == "percentile") query += target.aggregator[index] + '(' + target.percentileValue[index] + '))';else query += target.aggregator[index] + ')';
           }
           console.log(query);
 
