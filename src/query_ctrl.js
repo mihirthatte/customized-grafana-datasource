@@ -22,6 +22,8 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
     this.target.inlineGroupOperator = this.target.inlineGroupOperator||[['']];
     this.target.outerGroupOperator = this.target.outerGroupOperator || [''];
     this.target.percentileValue = this.target.percentileValue||[''];
+    this.target.bucket = this.target.bucket||[];
+    this.target.bucketValue = this.target.bucketValue||[];
     this.test ="";
     this.index="";
     this.parentIndex="";
@@ -85,6 +87,13 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
 		console.log("I am in remove value seg");
 
 	}
+
+ addBucket(index){
+		this.target.bucket.splice(index,0,'bucket');
+		this.target.bucketValue.splice(index,0,'');
+		console.log(this.target.bucket);
+	}
+
   getColumns() {
 	console.log("I am in get Columns");
 	console.log(this.target);
@@ -99,7 +108,7 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
       //.then(this.uiSegmentSrv.transformToSegments(false));
        }
 
-
+ 
 
  getTableNames() {
         console.log("I am in get Table Names");

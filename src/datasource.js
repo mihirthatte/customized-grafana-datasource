@@ -107,27 +107,52 @@ export class GenericDatasource {
 
   findWhereFields(options,parentIndex,index, like_field, callback){
 	var target = typeof (options) === "string" ? options : options.series;
-	var meta_field = options.whereClauseGroup[parentIndex][index].left;
-	//var like_field = options.whereClauseGroup[parentIndex][index].right;
-    var interpolated = {
-        target: this.templateSrv.replace(target, null, 'regex'),
-	meta_field: this.templateSrv.replace(meta_field, null, 'regex'),
-	like_field: this.templateSrv.replace(like_field, null, 'regex')
-    };
-    console.log(interpolated);
-    var r =  this.backendSrv.datasourceRequest({
-      url: this.url + '/searchW',
-      data: interpolated,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    }).then(this.mapToArray).then(callback);
-	/*.then(function(result){
-        this.whereSuggest = result.data;
-        console.log(this.whereSuggest);
-	return this.whereSuggest;
-        }.bind(this));*/
-	return r;
-  }
+	if(options.whereClauseGroup[parentIndex].length >1){
+		var whereList = options.whereClauseGroup[parentIndex];
+		var flag = true;
+		var meta_field = "";
+		var parent_meta_field ="";
+		var parent_meta_field_value="";
+		for(var i = 0; i<whereList.length && flag; i++){
+			if(i != index && typeof whereList[i] != 'undefined'){
+				meta_field = whereList[index].left;
+				parent_meta_field = whereList[i].left;
+				parent_meta_field_value = whereList[i].right;
+				flag = false;
+			}
+		}
+		var interpolated = {
+                target: this.templateSrv.replace(target, null, 'regex'),
+                meta_field: this.templateSrv.replace(meta_field, null, 'regex'),
+                like_field: this.templateSrv.replace(like_field, null, 'regex'),
+		parent_meta_field: this.templateSrv.replace(parent_meta_field, null, 'regex'),
+		parent_meta_field_value: this.templateSrv.replace(parent_meta_field_value, null, 'regex')
+                };
+
+		return  this.backendSrv.datasourceRequest({
+                url: this.url + '/searchR',
+                data: interpolated,
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+                }).then(this.mapToArray).then(callback);
+	}
+	else {
+		var meta_field = options.whereClauseGroup[parentIndex][index].left;
+    		var interpolated = {
+        	target: this.templateSrv.replace(target, null, 'regex'),
+		meta_field: this.templateSrv.replace(meta_field, null, 'regex'),
+		like_field: this.templateSrv.replace(like_field, null, 'regex')
+    		};
+    		console.log(interpolated);
+    		return  this.backendSrv.datasourceRequest({
+      		url: this.url + '/searchW',
+      		data: interpolated,
+      		method: 'POST',
+      		headers: { 'Content-Type': 'application/json' }
+    		}).then(this.mapToArray).then(callback);
+  	}
+
+ }
 
   metricFindValues(options) {
     var target = typeof (options) === "string" ? options : options.series;
@@ -205,7 +230,9 @@ export class GenericDatasource {
 			console.log(query);
 
 			for(var index = 0 ; index < target.metricValues_array.length; index++){
-                        	query+= ', aggregate(values.'+target.metricValues_array[index]+', $quantify, ';
+				query+= ', aggregate(values.'+target.metricValues_array[index];
+				if(typeof target.bucketValue[index] ==='undefined'|| target.bucketValue[index] ==='')  query+=', $quantify, ';
+				else query+=', '+target.bucketValue[index]+', ';
 				if(target.aggregator[index]=="percentile") query+= target.aggregator[index]+'('+target.percentileValue[index]+'))';
 				else query+= target.aggregator[index]+')'; 
                 	}

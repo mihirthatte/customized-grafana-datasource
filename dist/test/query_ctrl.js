@@ -41,6 +41,8 @@ var GenericDatasourceQueryCtrl = exports.GenericDatasourceQueryCtrl = function (
     _this.target.inlineGroupOperator = _this.target.inlineGroupOperator || [['']];
     _this.target.outerGroupOperator = _this.target.outerGroupOperator || [''];
     _this.target.percentileValue = _this.target.percentileValue || [''];
+    _this.target.bucket = _this.target.bucket || [];
+    _this.target.bucketValue = _this.target.bucketValue || [];
     _this.test = "";
     _this.index = "";
     _this.parentIndex = "";
@@ -110,6 +112,13 @@ var GenericDatasourceQueryCtrl = exports.GenericDatasourceQueryCtrl = function (
         this.target.metricValues_array.splice(index, 1);
       }
       console.log("I am in remove value seg");
+    }
+  }, {
+    key: 'addBucket',
+    value: function addBucket(index) {
+      this.target.bucket.splice(index, 0, 'bucket');
+      this.target.bucketValue.splice(index, 0, '');
+      console.log(this.target.bucket);
     }
   }, {
     key: 'getColumns',
