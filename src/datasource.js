@@ -13,6 +13,7 @@ export class GenericDatasource {
     this.metricValue = this.metricValue||[];
     this.metricColumn =this.metricColumn||[];
     this.whereSuggest =[];
+    //self = this;
   }
 
   query(options) {
@@ -20,7 +21,7 @@ export class GenericDatasource {
     //console.log(ctrl.metric_array);
     //var my_tar = options.target[0];
     //console.log(my_tar);
-    var query = this.buildQueryParameters(options); 
+    var query = this.buildQueryParameters(options, this); 
     console.log(query);
     query.targets = query.targets.filter(t => !t.hide);
 
@@ -70,6 +71,19 @@ export class GenericDatasource {
     });
   }
 
+   metricFindQuery(options) {
+    var target = typeof (options) === "string" ? options : options.target;
+    var interpolated = {
+        target: this.templateSrv.replace(target, null, 'regex')
+    };
+
+    return this.backendSrv.datasourceRequest({
+      url: this.url + '/search',
+      data: interpolated,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    }).then(this.mapToTextValue);
+  }
   metricFindTables(options) {
     var target = typeof (options) === "string" ? options : "Find tables";
     var interpolated = {
@@ -172,6 +186,26 @@ export class GenericDatasource {
 	}.bind(this)); */
 	return r;
   }
+
+
+
+  generateDashboard(options) {
+    var target = typeof (options) === "string" ? options : options.target
+    var interpolated = {
+        query: this.templateSrv.replace(target, null, 'regex')
+    };
+    console.log(interpolated);
+    return this.backendSrv.datasourceRequest({
+      url: this.url + '/dashboard',
+      data: interpolated,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    }).then(function(){
+        
+  });
+
+}
+
    findOperator(){
 
 	var r =  new Promise(function(resolve, reject) {
@@ -193,6 +227,9 @@ export class GenericDatasource {
   }
 
  mapToArray(result){
+	if (result.data.length == 0) {
+		result.data = ["No results found"]
+	}
 	return result.data;
 	}
 
@@ -200,19 +237,24 @@ export class GenericDatasource {
     this.metricValue = result.data;
     console.log(this.metricValue);
   }
+ 
+ targetContainsTemplate(target) {
+    return templateSrv.variableExists(target.target);
+  }
 
-  buildQueryParameters(options) {
+
+  buildQueryParameters(options, t) {
     //remove placeholder targets
-    options.targets = _.filter(options.targets, target => {
+    /*options.targets = _.filter(options.targets, target => {
       return target.target !== 'select metric';
-    });
+    });*/
     console.log(options.targets.metric_array);
-
+    var scopevar = options.scopedVars;
 	var query = _.map(options.targets, function(target) {
 		console.log(target.rawQuery);
 
 		if(target.rawQuery){
-			var query = target.target;
+			var query = t.templateSrv.replace(target.target, scopevar);
 			return query;
 		}
 		
@@ -258,13 +300,13 @@ export class GenericDatasource {
 			target.target = query;
 			return query;
 		}
-	}); 
-
+	}.bind(scopevar)); 
+    var index = 0;
     var targets = _.map(options.targets, target => {
 	console.log(target);
       return {
         //target: this.templateSrv.replace(target.target),
-        target: query[0],
+        target: query[index++],
         refId: target.refId,
         hide: target.hide,
         type: target.type || 'timeserie',

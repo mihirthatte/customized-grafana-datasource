@@ -152,6 +152,13 @@ var GenericDatasourceQueryCtrl = exports.GenericDatasourceQueryCtrl = function (
       return self.datasource.findWhereFields(self.target, self.parentIndex, self.index, arguments[0], arguments[1]);
     }
   }, {
+    key: 'createDashboard',
+    value: function createDashboard() {
+      var r = this.datasource.generateDashboard(this.target);
+      window.location.reload();
+      return r;
+    }
+  }, {
     key: 'foo',
     value: function foo() {
       console.log("I am in foo");
@@ -166,6 +173,7 @@ var GenericDatasourceQueryCtrl = exports.GenericDatasourceQueryCtrl = function (
       console.log("I am saving indices");
       this.parentIndex = parentIndex;
       this.index = index;
+      //return self.datasource.findWhereFields(self.target,parentIndex, index, " ", arguments[1]);
     }
   }, {
     key: 'toggleEditorMode',

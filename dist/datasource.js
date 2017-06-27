@@ -48,6 +48,7 @@ System.register(['lodash'], function (_export, _context) {
           this.metricValue = this.metricValue || [];
           this.metricColumn = this.metricColumn || [];
           this.whereSuggest = [];
+          //self = this;
         }
 
         _createClass(GenericDatasource, [{
@@ -57,7 +58,7 @@ System.register(['lodash'], function (_export, _context) {
             //console.log(ctrl.metric_array);
             //var my_tar = options.target[0];
             //console.log(my_tar);
-            var query = this.buildQueryParameters(options);
+            var query = this.buildQueryParameters(options, this);
             console.log(query);
             query.targets = query.targets.filter(function (t) {
               return !t.hide;
@@ -109,6 +110,21 @@ System.register(['lodash'], function (_export, _context) {
             }).then(function (result) {
               return result.data;
             });
+          }
+        }, {
+          key: 'metricFindQuery',
+          value: function metricFindQuery(options) {
+            var target = typeof options === "string" ? options : options.target;
+            var interpolated = {
+              target: this.templateSrv.replace(target, null, 'regex')
+            };
+
+            return this.backendSrv.datasourceRequest({
+              url: this.url + '/search',
+              data: interpolated,
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' }
+            }).then(this.mapToTextValue);
           }
         }, {
           key: 'metricFindTables',
@@ -216,6 +232,21 @@ System.register(['lodash'], function (_export, _context) {
             return r;
           }
         }, {
+          key: 'generateDashboard',
+          value: function generateDashboard(options) {
+            var target = typeof options === "string" ? options : options.target;
+            var interpolated = {
+              query: this.templateSrv.replace(target, null, 'regex')
+            };
+            console.log(interpolated);
+            return this.backendSrv.datasourceRequest({
+              url: this.url + '/dashboard',
+              data: interpolated,
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' }
+            }).then(function () {});
+          }
+        }, {
           key: 'findOperator',
           value: function findOperator() {
 
@@ -241,6 +272,9 @@ System.register(['lodash'], function (_export, _context) {
         }, {
           key: 'mapToArray',
           value: function mapToArray(result) {
+            if (result.data.length == 0) {
+              result.data = ["No results found"];
+            }
             return result.data;
           }
         }, {
@@ -250,19 +284,24 @@ System.register(['lodash'], function (_export, _context) {
             console.log(this.metricValue);
           }
         }, {
+          key: 'targetContainsTemplate',
+          value: function targetContainsTemplate(target) {
+            return templateSrv.variableExists(target.target);
+          }
+        }, {
           key: 'buildQueryParameters',
-          value: function buildQueryParameters(options) {
+          value: function buildQueryParameters(options, t) {
             //remove placeholder targets
-            options.targets = _.filter(options.targets, function (target) {
+            /*options.targets = _.filter(options.targets, target => {
               return target.target !== 'select metric';
-            });
+            });*/
             console.log(options.targets.metric_array);
-
+            var scopevar = options.scopedVars;
             var query = _.map(options.targets, function (target) {
               console.log(target.rawQuery);
 
               if (target.rawQuery) {
-                var query = target.target;
+                var query = t.templateSrv.replace(target.target, scopevar);
                 return query;
               } else {
                 var query = 'get ';
@@ -302,13 +341,13 @@ System.register(['lodash'], function (_export, _context) {
                 target.target = query;
                 return query;
               }
-            });
-
+            }.bind(scopevar));
+            var index = 0;
             var targets = _.map(options.targets, function (target) {
               console.log(target);
               return {
                 //target: this.templateSrv.replace(target.target),
-                target: query[0],
+                target: query[index++],
                 refId: target.refId,
                 hide: target.hide,
                 type: target.type || 'timeserie',
