@@ -89,6 +89,8 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           _this.parentIndex = "";
           _this.hoverEdit = false;
           _this.hiddenIndex = "";
+          _this.target.drillDown = [];
+          _this.target.drillDownValue = [];
           self = _this;
           return _this;
         }
@@ -193,9 +195,15 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
             return self.datasource.findWhereFields(self.target, self.parentIndex, self.index, arguments[0], arguments[1]);
           }
         }, {
+          key: 'generateDrillDown',
+          value: function generateDrillDown() {
+            this.target.drillDown.splice(0, 0, 'Drill');
+          }
+        }, {
           key: 'createDashboard',
           value: function createDashboard() {
-            var r = this.datasource.generateDashboard(this.target);
+            var r = this.datasource.generateDashboard(this.target, this.panelCtrl.timeSrv.time, this.panelCtrl.dashboard.title, this.datasource.name);
+            //this.saveDashboard()
             window.location.reload();
             return r;
           }

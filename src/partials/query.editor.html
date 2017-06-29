@@ -218,7 +218,9 @@
 				<button class="gf-form-label" style="background-color:#008CBA; border-radius: 4px; width:120px;" ng-click = "ctrl.panelCtrl.refresh();">Run</button>
                         </div>
 			<div class="gf-form">
-                                <button class="gf-form-label" style="background-color:#008CBA; border-radius: 4px; width:160px;" ng-click = "ctrl.createDashboard();">Generate Drill Down</button>
+                                <button class="gf-form-label" style="background-color:#008CBA; border-radius: 4px; width:160px;" ng-click = "ctrl.generateDrillDown();">Generate Drill Down</button>
+					<input ng-if = "ctrl.target.drillDown[0] == 'Drill'" type="text" class="gf-form-input" style="width:140px;" placeholder = " Drill down on " ng-model="ctrl.target.drillDownValue">
+                                        <button ng-if = "ctrl.target.drillDown[0] == 'Drill'" class = "gf-form-label"style="background-color:#008CBA; border-radius: 4px; width:160px;"  ng-click="ctrl.createDashboard()">Create Dashboard</button>
                         </div>
                 </div>
 	</div>

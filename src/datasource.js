@@ -189,10 +189,15 @@ export class GenericDatasource {
 
 
 
-  generateDashboard(options) {
+  generateDashboard(options, timeRange, DB_title, datasource) {
     var target = typeof (options) === "string" ? options : options.target
     var interpolated = {
-        query: this.templateSrv.replace(target, null, 'regex')
+        query: this.templateSrv.replace(target, null, 'regex'),
+	drill : options.drillDownValue,
+	timeFrom : timeRange["from"],
+	timeTo: timeRange["to"],
+	DB_title : DB_title,
+	Data_source : datasource
     };
     console.log(interpolated);
     return this.backendSrv.datasourceRequest({

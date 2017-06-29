@@ -29,6 +29,8 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
     this.parentIndex="";
     this.hoverEdit = false;
     this.hiddenIndex = "";
+    this.target.drillDown = [];
+    this.target.drillDownValue = [];
     self = this;
   }
 
@@ -125,8 +127,14 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
     	return self.datasource.findWhereFields(self.target,self.parentIndex, self.index, arguments[0], arguments[1]);
         }
 
+generateDrillDown(){
+	this.target.drillDown.splice(0,0,'Drill');
+}
+
+
 createDashboard(){
-	var r = this.datasource.generateDashboard(this.target);
+	var r = this.datasource.generateDashboard(this.target, this.panelCtrl.timeSrv.time, this.panelCtrl.dashboard.title, this.datasource.name);
+	//this.saveDashboard()
 	window.location.reload();
 	return r;
 
