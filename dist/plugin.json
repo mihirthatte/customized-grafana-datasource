@@ -1,6 +1,6 @@
 {
-  "name": "MihirSimpleJson",
-  "id": "mihir-simple--datasource",
+  "name": "simple-json-GUI",
+  "id": "simple-json-gui",
   "type": "datasource",
 
   "partials": {

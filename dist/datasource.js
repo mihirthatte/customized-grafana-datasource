@@ -116,7 +116,8 @@ System.register(['lodash'], function (_export, _context) {
           value: function metricFindQuery(options) {
             var target = typeof options === "string" ? options : options.target;
             var interpolated = {
-              target: this.templateSrv.replace(target, null, 'regex')
+              target: this.templateSrv.replace(target, null, 'regex'),
+              type: "Search"
             };
 
             return this.backendSrv.datasourceRequest({
@@ -131,11 +132,12 @@ System.register(['lodash'], function (_export, _context) {
           value: function metricFindTables(options) {
             var target = typeof options === "string" ? options : "Find tables";
             var interpolated = {
-              target: this.templateSrv.replace(target, null, 'regex')
+              target: this.templateSrv.replace(target, null, 'regex'),
+              type: "Table"
             };
             //console.log(interpolated);
             var a = this.backendSrv.datasourceRequest({
-              url: this.url + '/searchT',
+              url: this.url + '/search',
               data: interpolated,
               method: 'POST',
               headers: { 'Content-Type': 'application/json' }
@@ -143,25 +145,20 @@ System.register(['lodash'], function (_export, _context) {
             return a;
           }
         }, {
-          key: 'metricFindColumns',
-          value: function metricFindColumns(options) {
+          key: 'findMetric',
+          value: function findMetric(options, metric) {
             var target = typeof options === "string" ? options : options.series;
             var interpolated = {
-              target: this.templateSrv.replace(target, null, 'regex')
+              target: this.templateSrv.replace(target, null, 'regex'),
+              type: metric
             };
             console.log(interpolated);
-            var r = this.backendSrv.datasourceRequest({
-              url: this.url + '/searchC',
+            return this.backendSrv.datasourceRequest({
+              url: this.url + '/search',
               data: interpolated,
               method: 'POST',
               headers: { 'Content-Type': 'application/json' }
             }).then(this.mapToTextValue);
-            /*.then(function(result){
-                   this.metricColumn = result.data;
-                   console.log(this.metricColumn);
-                   }.bind(this));
-            */
-            return r;
           }
         }, {
           key: 'findWhereFields',
@@ -186,11 +183,12 @@ System.register(['lodash'], function (_export, _context) {
                 meta_field: this.templateSrv.replace(meta_field, null, 'regex'),
                 like_field: this.templateSrv.replace(like_field, null, 'regex'),
                 parent_meta_field: this.templateSrv.replace(parent_meta_field, null, 'regex'),
-                parent_meta_field_value: this.templateSrv.replace(parent_meta_field_value, null, 'regex')
+                parent_meta_field_value: this.templateSrv.replace(parent_meta_field_value, null, 'regex'),
+                type: "Where_Related"
               };
 
               return this.backendSrv.datasourceRequest({
-                url: this.url + '/searchR',
+                url: this.url + '/search',
                 data: interpolated,
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
@@ -200,11 +198,12 @@ System.register(['lodash'], function (_export, _context) {
               var interpolated = {
                 target: this.templateSrv.replace(target, null, 'regex'),
                 meta_field: this.templateSrv.replace(meta_field, null, 'regex'),
-                like_field: this.templateSrv.replace(like_field, null, 'regex')
+                like_field: this.templateSrv.replace(like_field, null, 'regex'),
+                type: "Where"
               };
               console.log(interpolated);
               return this.backendSrv.datasourceRequest({
-                url: this.url + '/searchW',
+                url: this.url + '/search',
                 data: interpolated,
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
@@ -212,34 +211,14 @@ System.register(['lodash'], function (_export, _context) {
             }
           }
         }, {
-          key: 'metricFindValues',
-          value: function metricFindValues(options) {
-            var target = typeof options === "string" ? options : options.series;
-            var interpolated = {
-              target: this.templateSrv.replace(target, null, 'regex')
-            };
-            console.log(interpolated);
-            var r = this.backendSrv.datasourceRequest({
-              url: this.url + '/searchV',
-              data: interpolated,
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' }
-            }).then(this.mapToTextValue);
-            /*then(function(result){
-            this.metricValue = result.data;
-            console.log(this.metricValue);
-            }.bind(this)); */
-            return r;
-          }
-        }, {
           key: 'generateDashboard',
-          value: function generateDashboard(options, timeRange, DB_title, datasource) {
+          value: function generateDashboard(options, timeFrom, timeTo, DB_title, datasource) {
             var target = typeof options === "string" ? options : options.target;
             var interpolated = {
               query: this.templateSrv.replace(target, null, 'regex'),
               drill: options.drillDownValue,
-              timeFrom: timeRange["from"],
-              timeTo: timeRange["to"],
+              timeFrom: timeFrom,
+              timeTo: timeTo,
               DB_title: DB_title,
               Data_source: datasource
             };

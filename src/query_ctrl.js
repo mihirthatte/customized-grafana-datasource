@@ -99,15 +99,15 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
   getColumns() {
 	console.log("I am in get Columns");
 	console.log(this.target);
-    return this.datasource.metricFindColumns(this.target)
+    return this.datasource.findMetric(this.target,"Column")
       .then(this.uiSegmentSrv.transformToSegments(false));
   }
 
   getMetricValues() {
         console.log("I am in get Metric Values");
         console.log(this.target);
-    	return this.datasource.metricFindValues(this.target);
-      //.then(this.uiSegmentSrv.transformToSegments(false));
+    	return this.datasource.findMetric(this.target,"Value")
+      .then(this.uiSegmentSrv.transformToSegments(false));
        }
 
  
@@ -133,7 +133,7 @@ generateDrillDown(){
 
 
 createDashboard(){
-	var r = this.datasource.generateDashboard(this.target, this.panelCtrl.timeSrv.time, this.panelCtrl.dashboard.title, this.datasource.name);
+	var r = this.datasource.generateDashboard(this.target, this.panelCtrl.$scope.ctrl.range.from.toISOString(), this.panelCtrl.$scope.ctrl.range.to.toISOString(),  this.panelCtrl.dashboard.title, this.datasource.name);
 	//this.saveDashboard()
 	window.location.reload();
 	return r;
