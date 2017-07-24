@@ -30,9 +30,8 @@ var GenericDatasourceQueryCtrl = exports.GenericDatasourceQueryCtrl = function (
     _this.target.series = _this.target.series || 'select table';
     _this.target.type = _this.target.type || 'timeserie';
     _this.target.condition = _this.target.condition || [];
+    //this.target.groupby_field = this.target.groupby_field||[]; 
     _this.target.groupby_field = _this.target.groupby_field || ' ';
-    //this.target.segments = this.target.segments||[];
-    //this.target.valueSegments =this.target.valueSegments||[];
     _this.target.metric_array = _this.target.metric_array || ['Select Metric'];
     _this.target.metricValues_array = _this.target.metricValues_array || ['Select Metric Value'];
     _this.target.aggregator = _this.target.aggregator || ['average'];
@@ -43,10 +42,9 @@ var GenericDatasourceQueryCtrl = exports.GenericDatasourceQueryCtrl = function (
     _this.target.percentileValue = _this.target.percentileValue || [''];
     _this.target.bucket = _this.target.bucket || [];
     _this.target.bucketValue = _this.target.bucketValue || [];
-    _this.test = "";
+    _this.target.drillDownAlias = "";
     _this.index = "";
     _this.parentIndex = "";
-    _this.hoverEdit = false;
     _this.hiddenIndex = "";
     _this.target.drillDown = [];
     _this.target.drillDownValue = [];
@@ -58,44 +56,35 @@ var GenericDatasourceQueryCtrl = exports.GenericDatasourceQueryCtrl = function (
     key: 'addWhereClause',
     value: function addWhereClause(index) {
       this.target.whereClauseGroup[index].push({ 'left': 'Select Metric', 'op': '=', 'right': '' });
-      console.log(this.target.metricValues_array);
     }
   }, {
     key: 'removeWhereClause',
     value: function removeWhereClause(parentIndex, index) {
-      console.log(this.target.whereClauseGroup[parentIndex][index]);
       this.target.whereClauseGroup[parentIndex].splice(index, 1);
-      console.log(this.target.whereClauseGroup[parentIndex]);
+      if (this.target.whereClauseGroup[parentIndex].length == 0 && parentIndex > 0) {
+        this.target.whereClauseGroup.splice(parentIndex, 1);
+      }
     }
   }, {
     key: 'addWhereClauseGroup',
     value: function addWhereClauseGroup() {
       this.target.whereClauseGroup.push([{ 'left': 'Select Metric', 'op': '', 'right': '' }]);
       this.target.inlineGroupOperator.push(['']);
-      console.log(this.target.metricValues_array);
     }
   }, {
     key: 'getOperator',
     value: function getOperator() {
-      var a = this.datasource.findOperator();
-      return a;
-      //.then(this.uiSegmentSrv.transformToSegments(false));
+      return this.datasource.findOperator();
     }
   }, {
     key: 'addSegments',
     value: function addSegments() {
       this.target.metric_array.push('Select Metric');
-      console.log(this.target.metric_array);
     }
   }, {
     key: 'removeSegment',
     value: function removeSegment(index) {
-      if (this.target.metric_array.length == 1) {
-        this.target.metric_array.splice(index, 1, 'Select Metric');
-      } else {
-        this.target.metric_array.splice(index, 1);
-      }
-      console.log("I am in remove seg");
+      this.target.metric_array.splice(index, 1);
     }
   }, {
     key: 'addValueSegments',
@@ -103,53 +92,47 @@ var GenericDatasourceQueryCtrl = exports.GenericDatasourceQueryCtrl = function (
       this.target.metricValues_array.push('Select Metric Value');
       this.target.aggregator.push('average');
       this.target.percentileValue.push('');
-      console.log(this.target.metricValues_array);
     }
   }, {
     key: 'removeValueSegment',
     value: function removeValueSegment(index) {
-      if (this.target.metricValues_array.length == 1) {
-        this.target.metricValues_array.splice(index, 1, 'Select Metric Value');
-      } else {
-        this.target.metricValues_array.splice(index, 1);
-      }
-      console.log("I am in remove value seg");
+      this.target.metricValues_array.splice(index, 1);
+    }
+  }, {
+    key: 'addGroupBy',
+    value: function addGroupBy() {
+      this.target.groupby_field.push('Select Column');
+      console.log(this.target.groupby_field);
+    }
+  }, {
+    key: 'removeGroupBy',
+    value: function removeGroupBy(index) {
+      this.target.groupby_field.splice(index, 1);
     }
   }, {
     key: 'addBucket',
     value: function addBucket(index) {
       this.target.bucket.splice(index, 0, 'bucket');
       this.target.bucketValue.splice(index, 0, '');
-      console.log(this.target.bucket);
     }
   }, {
     key: 'getColumns',
     value: function getColumns() {
-      console.log("I am in get Columns");
-      console.log(this.target);
       return this.datasource.findMetric(this.target, "Column").then(this.uiSegmentSrv.transformToSegments(false));
     }
   }, {
     key: 'getMetricValues',
     value: function getMetricValues() {
-      console.log("I am in get Metric Values");
-      console.log(this.target);
       return this.datasource.findMetric(this.target, "Value").then(this.uiSegmentSrv.transformToSegments(false));
     }
   }, {
     key: 'getTableNames',
     value: function getTableNames() {
-      console.log("I am in get Table Names");
-      console.log(this.target);
       return this.datasource.metricFindTables(this.target).then(this.uiSegmentSrv.transformToSegments(false));
     }
   }, {
     key: 'getWhereFields',
     value: function getWhereFields() {
-      console.log("I am in get Table Names");
-      console.log(self.target);
-      console.log(arguments[0]);
-      //var a = this.target.whereClauseGroup[parentIndex][index].right;
       return self.datasource.findWhereFields(self.target, self.parentIndex, self.index, arguments[0], arguments[1]);
     }
   }, {
@@ -160,27 +143,15 @@ var GenericDatasourceQueryCtrl = exports.GenericDatasourceQueryCtrl = function (
   }, {
     key: 'createDashboard',
     value: function createDashboard() {
-      var r = this.datasource.generateDashboard(this.target, this.panelCtrl.$scope.ctrl.range.from.toISOString(), this.panelCtrl.$scope.ctrl.range.to.toISOString(), this.panelCtrl.dashboard.title, this.datasource.name);
-      //this.saveDashboard()
+      var r = this.datasource.generateDashboard(this.target, this.panelCtrl.$scope.ctrl.range.from.toISOString(), this.panelCtrl.$scope.ctrl.range.to.toISOString(), this.panelCtrl.dashboard.title, this.datasource.name, this.panel.type);
       window.location.reload();
       return r;
     }
   }, {
-    key: 'foo',
-    value: function foo() {
-      console.log("I am in foo");
-      console.log(self.test);
-      //console.log(index);
-      //return ["abcd","azme","aoiq","dnvbv","doie","abwe","aoio"];
-      return self.wName;
-    }
-  }, {
     key: 'saveIndices',
     value: function saveIndices(parentIndex, index) {
-      console.log("I am saving indices");
       this.parentIndex = parentIndex;
       this.index = index;
-      //return self.datasource.findWhereFields(self.target,parentIndex, index, " ", arguments[1]);
     }
   }, {
     key: 'toggleEditorMode',
@@ -190,20 +161,7 @@ var GenericDatasourceQueryCtrl = exports.GenericDatasourceQueryCtrl = function (
   }, {
     key: 'onChangeInternal',
     value: function onChangeInternal() {
-      //this.target.metric_array = ['Select Metric'];
-      //this.target.metricValues_array = ['Select Matric Value'];
-      console.log(this.target);
       this.panelCtrl.refresh();
-    }
-  }, {
-    key: 'hoverIn',
-    value: function hoverIn() {
-      this.hoverEdit = true;
-    }
-  }, {
-    key: 'hoverOut',
-    value: function hoverOut() {
-      this.hoverEdit = false;
     }
   }]);
 

@@ -25,7 +25,6 @@
 
                         <div class="gf-form">
                                 <label class="gf-form-label query-keyword width-7">get Values</label>
-                                        <!--  <select  type="text" style = "width : 80px;" class="gf-form-input" ng-model="ctrl.target.metricValues_array[$index]" ng-click = "ctrl.getMetricValues()" ng-options="x for x in ctrl.datasource.metricValue" > </select> -->
                                                 <select style = "width : 100px;" name="aggregator" ng-model ="ctrl.target.aggregator[0]" bs-tooltip="'Select an Aggregator'">
                                                             <option "style = background: #292929" value="average">average</option>
                                                             <option "style = background: #292929" value="max">max</option>
@@ -48,8 +47,6 @@
 		
 		<div ng-repeat = "segment in ctrl.target.metricValues_array track by $index">
 				<div style="padding-left:95px;" ng-if = "$index > 0"class="gf-form-inline">
-				<!-- <div ng-repeat = "segment in ctrl.target.metricValues_array track by $index"> -->
-					<!--  <select  type="text" style = "width : 80px;" class="gf-form-input" ng-model="ctrl.target.metricValues_array[$index]" ng-click = "ctrl.getMetricValues()" ng-options="x for x in ctrl.datasource.metricValue" > </select> -->
 						<select style = "width : 100px;" name="aggregator" ng-model ="ctrl.target.aggregator[$index]" bs-tooltip="'Select an Aggregator'">
                                                             <option "style = background: #292929" value="average">average</option>
                                                             <option "style = background: #292929" value="max">max</option>
@@ -74,8 +71,7 @@
                                 <label class="gf-form-label query-keyword width-7">get metric</label>
 			</div>
                         <div ng-repeat = "element in ctrl.target.metric_array track by $index" class="gf-form">
-				<metric-segment-model property="ctrl.target.metric_array[$index]" get-options = "ctrl.getColumns()"></metric-segment-model> <!-- {{ctrl.target.metric_array[$index]}}{{$index}} -->
-				<!-- <select type="text" style = "width : 80px;" class="gf-form-input" ng-model="ctrl.target.metric_array[$index]" ng-click = "ctrl.getColumns()" ng-options="x for x in ctrl.datasource.metricColumn" ></select> -->
+				<metric-segment-model property="ctrl.target.metric_array[$index]" get-options = "ctrl.getColumns()"></metric-segment-model>
 				<button  class = "btn btn-inverse gf-form-btn"  ng-click="ctrl.removeSegment($index)"><i class="fa fa-trash"></i></button>
                         </div>
 				
@@ -188,18 +184,34 @@
                         </div>
 
     		</div>
-
+		
 		<div class = "gf-form-inline">
         		<div class="gf-form">
                 		<label class="gf-form-label query-keyword">Group by column</label>
                                 	<input type="text" class="gf-form-input" ng-model="ctrl.target.groupby_field" bs-tooltip="'Add a group by column or leave blank'"
                                 	placeholder="column" spellcheck="false" bs-typeahead="listColumns" data-min-length=0 ></input>
 			</div>
-
-			<div class="gf-form gf-form--grow">
-                                <div class="gf-form-label gf-form-label--grow"></div>
-                        </div>
 		</div>
+		<!--
+		<div class="gf-form-inline">
+                        <div class="gf-form">
+                                <label class="gf-form-label query-keyword width-8">Group by column</label>
+                        </div>
+                        <div ng-repeat = "element in ctrl.target.groupby_field by $index" class="gf-form">
+				<input type="text" class="gf-form-input" ng-model="ctrl.target.groupby_field[$index]"></input>
+                                <metric-segment-model property="ctrl.target.groupby_field[$index]" get-options = "ctrl.getColumns()"></metric-segment-model>
+                                <button  class = "btn btn-inverse gf-form-btn"  ng-click="ctrl.removeGroupBy($index)"><i class="fa fa-trash"></i></button>
+                        </div>
+
+                        <div class="gf-form">
+                                <button class = "btn btn-inverse gf-form-btn query-keyword"  ng-click="ctrl.addGroupBy()"><i class="fa fa-plus"></i></button>
+                        </div>
+
+
+
+                </div>
+		-->
+
 		
 		 <div class="gf-form-inline">
                         <div class="gf-form">
@@ -219,7 +231,8 @@
                         </div>
 			<div class="gf-form">
                                 <button class="gf-form-label" style="background-color:#008CBA; border-radius: 4px; width:160px;" ng-click = "ctrl.generateDrillDown();">Generate Drill Down</button>
-					<input ng-if = "ctrl.target.drillDown[0] == 'Drill'" type="text" class="gf-form-input" style="width:140px;" placeholder = " Drill down on " ng-model="ctrl.target.drillDownValue">
+					<input ng-if = "ctrl.target.drillDown[0] == 'Drill'" type="text" class="gf-form-input" style="width:120px;" placeholder = " Drill down on " ng-model="ctrl.target.drillDownValue">
+					<input ng-if = "ctrl.target.drillDown[0] == 'Drill'" type="text" class="gf-form-input" style="width:120px;" placeholder = " as  " ng-model="ctrl.target.drillDownAlias" required>
                                         <button ng-if = "ctrl.target.drillDown[0] == 'Drill'" class = "gf-form-label"style="background-color:#008CBA; border-radius: 4px; width:160px;"  ng-click="ctrl.createDashboard()">Create Dashboard</button>
                         </div>
                 </div>

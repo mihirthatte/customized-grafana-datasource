@@ -54,16 +54,10 @@ System.register(['lodash'], function (_export, _context) {
         _createClass(GenericDatasource, [{
           key: 'query',
           value: function query(options) {
-            console.log(options.targets);
-            //console.log(ctrl.metric_array);
-            //var my_tar = options.target[0];
-            //console.log(my_tar);
             var query = this.buildQueryParameters(options, this);
-            console.log(query);
             query.targets = query.targets.filter(function (t) {
               return !t.hide;
             });
-
             if (query.targets.length <= 0) {
               return this.q.when({ data: [] });
             }
@@ -135,14 +129,12 @@ System.register(['lodash'], function (_export, _context) {
               target: this.templateSrv.replace(target, null, 'regex'),
               type: "Table"
             };
-            //console.log(interpolated);
-            var a = this.backendSrv.datasourceRequest({
+            return this.backendSrv.datasourceRequest({
               url: this.url + '/search',
               data: interpolated,
               method: 'POST',
               headers: { 'Content-Type': 'application/json' }
             }).then(this.mapToTextValue);
-            return a;
           }
         }, {
           key: 'findMetric',
@@ -201,7 +193,6 @@ System.register(['lodash'], function (_export, _context) {
                 like_field: this.templateSrv.replace(like_field, null, 'regex'),
                 type: "Where"
               };
-              console.log(interpolated);
               return this.backendSrv.datasourceRequest({
                 url: this.url + '/search',
                 data: interpolated,
@@ -212,7 +203,7 @@ System.register(['lodash'], function (_export, _context) {
           }
         }, {
           key: 'generateDashboard',
-          value: function generateDashboard(options, timeFrom, timeTo, DB_title, datasource) {
+          value: function generateDashboard(options, timeFrom, timeTo, DB_title, datasource, type) {
             var target = typeof options === "string" ? options : options.target;
             var interpolated = {
               query: this.templateSrv.replace(target, null, 'regex'),
@@ -220,9 +211,10 @@ System.register(['lodash'], function (_export, _context) {
               timeFrom: timeFrom,
               timeTo: timeTo,
               DB_title: DB_title,
-              Data_source: datasource
+              Data_source: datasource,
+              alias: options.drillDownAlias,
+              graph_type: type
             };
-            console.log(interpolated);
             return this.backendSrv.datasourceRequest({
               url: this.url + '/dashboard',
               data: interpolated,
@@ -233,12 +225,10 @@ System.register(['lodash'], function (_export, _context) {
         }, {
           key: 'findOperator',
           value: function findOperator() {
-
-            var r = new Promise(function (resolve, reject) {
+            return new Promise(function (resolve, reject) {
               var a = { "data": ['=', '<', '>'], "status": 200, "statusText": "OK" };
               resolve(a);
             }).then(this.mapToTextValue);
-            return r;
           }
         }, {
           key: 'mapToTextValue',
@@ -275,17 +265,13 @@ System.register(['lodash'], function (_export, _context) {
         }, {
           key: 'buildQueryParameters',
           value: function buildQueryParameters(options, t) {
-            //remove placeholder targets
-            /*options.targets = _.filter(options.targets, target => {
-              return target.target !== 'select metric';
-            });*/
-            console.log(options.targets.metric_array);
             var scopevar = options.scopedVars;
             var query = _.map(options.targets, function (target) {
-              console.log(target.rawQuery);
-
               if (target.rawQuery) {
                 var query = t.templateSrv.replace(target.target, scopevar);
+                var oldQ = query.substr(query.indexOf("{"), query.length);
+                var formatQ = oldQ.replace(/,/gi, " or ");
+                query = query.replace(oldQ, formatQ);
                 return query;
               } else {
                 var query = 'get ';
@@ -297,15 +283,12 @@ System.register(['lodash'], function (_export, _context) {
                   }
                   query += ',';
                 }
-                console.log(query);
 
                 for (var index = 0; index < target.metricValues_array.length; index++) {
                   query += ', aggregate(values.' + target.metricValues_array[index];
                   if (typeof target.bucketValue[index] === 'undefined' || target.bucketValue[index] === '') query += ', $quantify, ';else query += ', ' + target.bucketValue[index] + ', ';
                   if (target.aggregator[index] == "percentile") query += target.aggregator[index] + '(' + target.percentileValue[index] + '))';else query += target.aggregator[index] + ')';
                 }
-                console.log(query);
-
                 query += ' between ($START,$END)';
                 if (target.groupby_field != " ") {
                   query += ' by ' + target.groupby_field;
@@ -330,7 +313,6 @@ System.register(['lodash'], function (_export, _context) {
             var targets = _.map(options.targets, function (target) {
               console.log(target);
               return {
-                //target: this.templateSrv.replace(target.target),
                 target: query[index++],
                 refId: target.refId,
                 hide: target.hide,
@@ -338,9 +320,7 @@ System.register(['lodash'], function (_export, _context) {
                 alias: target.target_alias
               };
             });
-
             options.targets = targets;
-            console.log(options.targets);
             return options;
           }
         }]);
